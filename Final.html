@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ektu Bose Golpo - Pro Management Suite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <style>
+        :root { --primary: #41061b; --dark: #160005; --accent: #ffca56; }
+        body { background-color: #fcfaf8; }
+        .bg-primary { background-color: var(--primary); }
+        .text-primary { color: var(--primary); }
+        .border-primary { border-color: var(--primary); }
+        .bg-dark { background-color: var(--dark); }
+        .bg-accent { background-color: var(--accent); }
+        .text-accent { color: var(--accent); }
+        
+        .blink-red { animation: blinker 1.5s linear infinite; color: #ff0000; }
+        @keyframes blinker { 50% { opacity: 0.2; } }
+
+        /* Print Specifics */
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white; }
+            .invoice-container { border: none !important; box-shadow: none !important; margin: 0 !important; width: 100% !important; }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 10px; }
+    </style>
+</head>
+<body class="text-slate-800 font-sans antialiased">
+
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <header class="flex flex-col md:flex-row justify-between items-center mb-10 bg-white p-8 rounded-3xl shadow-sm border border-stone-200 gap-6">
+            <div class="flex items-center gap-6">
+                <div class="relative group">
+                    <div id="logoPreview" class="w-24 h-24 bg-stone-100 rounded-2xl flex flex-col items-center justify-center border-2 border-dashed border-stone-300 overflow-hidden text-[10px] text-stone-400 no-print cursor-pointer hover:bg-stone-200 transition-all">
+                        <i class="fas fa-camera text-2xl mb-1"></i> UPLOAD LOGO
+                    </div>
+                    <input type="file" id="logoInput" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer no-print" onchange="handleLogoUpload(event)">
+                </div>
+                <div>
+                    <h1 class="text-4xl font-black text-primary tracking-tighter">Ektu Boshe Golpo <span class="text-stone-500 font-light">| Cafe</span></h1>
+                    <div class="flex items-center gap-2 text-stone-500 text-sm font-medium">
+                        <i class="fas fa-map-marker-alt text-red-500"></i> Lake Town, Siliguri, West Bengal
+                    </div>
+                    <div class="flex items-center gap-2 text-stone-500 text-sm font-medium">
+                        <i class="fas fa-phone-alt text-blue-500"></i> Call us now +91 98765 43210
+                    </div>
+                   <span class="text-[12px] font-bold bg-stone-90 px-1 py-1 rounded">Licence Number: 2285191001064</span>
+                </div>
+            </div>
+            
+            <div class="flex flex-col items-end gap-3 no-print">
+                <div id="promoAlert" class="bg-red-50 border border-red-100 px-4 py-2 rounded-xl text-xs flex items-center gap-2 shadow-sm">
+                    <i class="fas fa-bolt blink-red"></i> 
+                    <span class="font-bold">Online Flash Deal: 10% Flat Off!</span>
+                </div>
+                <div class="relative inline-block w-full">
+                    <select id="orderType" onchange="updateUI()" class="w-full appearance-none bg-primary text-white pl-4 pr-10 py-3 rounded-xl font-bold outline-none cursor-pointer text-sm shadow-lg">
+                        <option value="venue">Order at Venue (Standard)</option>
+                        <option value="online">Order Online (10% Discount)</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-white">
+                        <i class="fas fa-chevron-down text-xs"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-8 space-y-8 no-print">
+                
+                <section class="bg-white p-8 rounded-3xl shadow-sm border border-stone-100">
+                    <h2 class="text-xl font-bold mb-6 flex items-center gap-3"><span class="bg-primary text-white w-8 h-8 rounded-lg flex items-center justify-center text-sm italic">01</span> Customer Information</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-stone-400 uppercase ml-1">Full Name</label>
+                            <input type="text" id="custName" placeholder="Ex: Rahul Sharma" class="w-full border-stone-200 border p-3.5 rounded-xl outline-none focus:border-primary transition-all">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-stone-400 uppercase ml-1">WhatsApp Number</label>
+                            <input type="tel" id="custPhone" placeholder="+91 00000 00000" class="w-full border-stone-200 border p-3.5 rounded-xl outline-none focus:border-primary transition-all">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-stone-400 uppercase ml-1">Email (Optional)</label>
+                            <input type="email" id="custEmail" placeholder="rahul@example.com" class="w-full border-stone-200 border p-3.5 rounded-xl outline-none focus:border-primary transition-all">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bg-white p-8 rounded-3xl shadow-sm border border-stone-100">
+                    <h2 class="text-xl font-bold mb-6 flex items-center gap-3"><span class="bg-primary text-white w-8 h-8 rounded-lg flex items-center justify-center text-sm italic">02</span> Venue & Timing</h2>
+                    
+                    <div id="capacityError" class="hidden mb-6 p-4 bg-red-500 text-white rounded-xl text-sm font-bold flex items-center gap-3">
+                        <i class="fas fa-exclamation-triangle"></i> Guest count exceeds selected room capacity!
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+                        <div id="room-party" onclick="setRoom('Party Room', 499, 10)" class="cursor-pointer border-2 border-stone-100 p-6 rounded-2xl transition-all hover:border-primary/30">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="font-black text-lg">Private Party Room</h3>
+                                <i class="fas fa-users text-stone-300"></i>
+                            </div>
+                            <p class="text-xs text-stone-500 mb-4">Max 10 Guests • Music System • AC</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-lg text-[10px] font-bold italic">₹499/hr</span>
+                                <span class="bg-green-50 text-green-700 px-3 py-1 rounded-lg text-[10px] font-bold italic">3hrs: ₹1199</span>
+                                <span class="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-lg text-[10px] font-bold italic">6hrs: ₹1999</span>
+                            </div>
+                        </div>
+                        <div id="room-cabin" onclick="setRoom('Small Cabin', 99, 4)" class="cursor-pointer border-2 border-stone-100 p-6 rounded-2xl transition-all hover:border-primary/30">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="font-black text-lg">Small Cabin (AC)</h3>
+                                <i class="fas fa-door-closed text-stone-300"></i>
+                            </div>
+                            <p class="text-xs text-stone-500 mb-4">Max 4 Guests • Private Dining • AC</p>
+                            <span class="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-lg text-[10px] font-bold italic">₹99/hr</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-stone-400 uppercase ml-1">Event Date</label>
+                            <input type="date" id="eventDate" class="w-full border-stone-200 border p-3.5 rounded-xl outline-none">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-stone-400 uppercase ml-1">Check In</label>
+                            <input type="time" id="startTime" onchange="calcHours()" class="w-full border-stone-200 border p-3.5 rounded-xl outline-none">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-stone-400 uppercase ml-1">Check Out</label>
+                            <input type="time" id="endTime" onchange="calcHours()" class="w-full border-stone-200 border p-3.5 rounded-xl outline-none">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bg-white p-8 rounded-3xl shadow-sm border border-stone-100">
+                    <h2 class="text-xl font-bold mb-6 flex items-center gap-3"><span class="bg-primary text-white w-8 h-8 rounded-lg flex items-center justify-center text-sm italic">03</span> Guest Menu Selection</h2>
+                    <div class="grid grid-cols-2 gap-5 mb-8">
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-stone-400 uppercase ml-1">Number of Adults</label>
+                            <input type="number" id="adultCount" value="0" min="0" onchange="generateGuestMenu()" class="w-full border-stone-200 border p-3.5 rounded-xl outline-none">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-stone-400 uppercase ml-1">Number of Children</label>
+                            <input type="number" id="childCount" value="0" min="0" onchange="generateGuestMenu()" class="w-full border-stone-200 border p-3.5 rounded-xl outline-none">
+                        </div>
+                    </div>
+                    <div id="guestMenuContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                </section>
+
+                <section class="bg-white p-8 rounded-3xl shadow-sm border border-stone-100">
+                    <h2 class="text-xl font-bold mb-6 flex items-center gap-3"><span class="bg-primary text-white w-8 h-8 rounded-lg flex items-center justify-center text-sm italic">04</span> Services & Add-ons</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <label class="text-[10px] font-bold text-stone-400 uppercase block mb-2">Decoration Package</label>
+                            <select id="decoType" onchange="updateUI()" class="w-full border-stone-200 border p-3.5 rounded-xl outline-none mb-6">
+                                <option value="0">No Decoration</option>
+                                <option value="499">Basic (Balloons & Ribbons) - ₹499</option>
+                                <option value="999">Premium (Theme & Lights) - ₹999</option>
+                            </select>
+
+                            <div class="space-y-3">
+                                <label class="flex items-center gap-3 p-3 bg-stone-50 rounded-xl cursor-pointer">
+                                    <input type="checkbox" id="cakeCheck" onchange="updateUI()" class="w-5 h-5 accent-primary">
+                                    <span class="text-sm font-bold">Include Cake?</span>
+                                </label>
+                              
+<div id="cakeOptions" class="hidden pl-8 space-y-3 animate-fadeIn">
+    <select id="cakeWeight" onchange="updateUI()" class="w-full border-stone-200 border p-2 rounded-lg text-sm">
+        <option value="500">Regular 0.5 KG (₹500)</option>
+        <option value="900">Premium 1.0 KG (₹900)</option>
+    </select>
+
+    <!-- Cake Message -->
+    <input
+        type="text"
+        id="cakeMessage"
+        placeholder="Message on cake (eg: Happy Birthday)"
+        class="w-full border-stone-200 border p-2 rounded-lg text-sm"
+        maxlength="30"
+    >
+</div>
+
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <label class="text-[10px] font-bold text-stone-400 uppercase block mb-2">Operational Add-ons</label>
+                            <div class="flex flex-col gap-2">
+                                <label class="flex justify-between items-center p-3 bg-stone-50 rounded-xl cursor-pointer">
+                                    <div class="flex items-center gap-3">
+                                        <input type="checkbox" class="addon-check w-5 h-5 accent-primary" value="499" onchange="updateUI()">
+                                        <span class="text-sm font-semibold">Early Room Access</span>
+                                    </div>
+                                    <span class="text-[10px] font-bold bg-white px-2 py-1 rounded shadow-sm">₹499</span>
+                                </label>
+                                <label class="flex justify-between items-center p-3 bg-stone-50 rounded-xl cursor-pointer">
+                                    <div class="flex items-center gap-3">
+                                        <input type="checkbox" class="addon-check w-5 h-5 accent-primary" value="299" onchange="updateUI()">
+                                        <span class="text-sm font-semibold">Late Checkout</span>
+                                    </div>
+                                    <span class="text-[10px] font-bold bg-white px-2 py-1 rounded shadow-sm">₹299</span>
+                                </label>
+                                <label class="flex justify-between items-center p-3 bg-stone-50 rounded-xl cursor-pointer">
+                                    <div class="flex items-center gap-3">
+                                        <input type="checkbox" class="addon-check w-5 h-5 accent-primary" value="199" onchange="updateUI()">
+                                        <span class="text-sm font-semibold">Photographer</span>
+                                    </div>
+                                    <span class="text-[10px] font-bold bg-white px-2 py-1 rounded shadow-sm">₹199</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="p-6 bg-stone-100 rounded-3xl border border-stone-200 text-[11px]">
+                    <h4 class="font-bold mb-3 uppercase tracking-widest text-stone-500 flex items-center gap-2">
+                        <i class="fas fa-file-contract"></i> Booking Terms and Conditions
+                    </h4>
+                    <ul class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 text-stone-600 list-disc pl-4 mb-6">
+                        <li>Cancellations made 2 days before the event or later are non-refundable.
+Cancellations made 3–4 days before the event will have a 25% deduction.</li>
+                        <li>To ensure a safe and comfortable environment for all guests, alcohol consumption is not permitted on the premises.</li>    
+                        <li>Outside food and beverages are strictly prohibited.</li>
+                        <li>Damage to cafe property will be charged at actuals.</li>
+                        <li>Standard 40% advance required for confirmation.</li>
+                        <li>Modify terms in special cases with prior communication.</li>
+                        
+                    </ul>
+                    <label class="flex items-center gap-3 font-bold cursor-pointer bg-white p-4 rounded-xl border border-stone-200">
+                        <input type="checkbox" id="tcAgree" class="w-5 h-5 accent-primary"> 
+                        <span class="text-sm uppercase tracking-tight">I accept all terms and conditions</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="lg:col-span-4 no-print">
+                <div class="bg-dark text-white p-8 rounded-[2rem] sticky top-8 border-t-8 border-accent shadow-2xl overflow-hidden">
+                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-accent opacity-10 rounded-full"></div>
+                    
+                    <h2 class="text-2xl font-black mb-8 text-accent flex items-center gap-3">
+                        <i class="fas fa-receipt"></i> Summary
+                    </h2>
+                    
+                    <div class="space-y-5">
+                        <div class="flex justify-between text-stone-400 text-sm">
+                            <span>Room Charges</span>
+                            <span id="resRoom" class="text-white font-bold">₹0</span>
+                        </div>
+                        <div class="flex justify-between text-stone-400 text-sm">
+                            <span>Food & Beverage</span>
+                            <span id="resFood" class="text-white font-bold">₹0</span>
+                        </div>
+                        <div class="flex justify-between text-stone-400 text-sm">
+                            <span>Decor & Services</span>
+                            <span id="resDecor" class="text-white font-bold">₹0</span>
+                        </div>
+                        
+                        <div id="discountRow" class="hidden flex justify-between text-green-400 text-sm italic font-bold">
+                            <span>Online Discount (10%)</span>
+                            <span id="resDiscount">-₹0</span>
+                        </div>
+
+                        <div class="flex justify-between text-stone-400 text-sm italic">
+                            <span>Misc. (Rounding)</span>
+                            <span id="resMisc" class="text-white">₹0</span>
+                        </div>
+
+                        <div class="pt-6 border-t border-stone-800 space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-stone-400">Net Total</span>
+                                <span id="resGrand" class="text-3xl font-black text-accent">₹0</span>
+                            </div>
+                            <div class="flex justify-between items-center bg-stone-800/50 p-4 rounded-2xl border border-stone-700">
+                                <span class="text-xs font-bold text-stone-300">Advance (40%)</span>
+                                <span id="resAdvance" class="text-lg font-black text-green-400">₹0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 pt-8 border-t border-stone-800">
+                        <p class="text-[10px] text-stone-500 uppercase font-black mb-4 tracking-widest text-center">Process Payment</p>
+                        <div class="flex flex-col gap-3">
+                            <button id="payBtn" onclick="processAdvance()" class="w-full bg-green-500 hover:bg-green-400 text-white font-black py-4 rounded-2xl transition-all shadow-lg flex items-center justify-center gap-3">
+                                <i class="fas fa-check-circle"></i> Mark Advance Paid
+                            </button>
+                            
+                            <button id="invoiceBtn" onclick="generateInvoice()" class="w-full bg-stone-700 text-stone-400 font-bold py-4 rounded-2xl cursor-not-allowed transition-all flex items-center justify-center gap-3" disabled title="Pay advance first">
+                                <i class="fas fa-print"></i> Generate Final Bill
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-stone-400 py-12 mt-20 no-print">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-stone-800 pb-10">
+            
+            <div class="space-y-4">
+                <h3 class="text-white font-black text-xl tracking-tighter">Ektu Bose Golpo</h3>
+                <p class="text-xs leading-relaxed">
+                    Siliguri’s favorite spot for stories, snacks, and celebrations. Creating memories over coffee since 2021.
+                </p>
+                <div class="flex gap-4 text-white">
+                    <a href="#" class="hover:text-accent transition-colors"><i class="fab fa-instagram text-lg"></i></a>
+                    <a href="#" class="hover:text-accent transition-colors"><i class="fab fa-facebook text-lg"></i></a>
+                    <a href="#" class="hover:text-accent transition-colors"><i class="fab fa-whatsapp text-lg"></i></a>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <h4 class="text-white font-bold text-sm uppercase tracking-widest">Reach Us</h4>
+                <ul class="text-xs space-y-3">
+                    <li class="flex items-start gap-3">
+                        <i class="fas fa-map-marker-alt text-accent mt-1"></i>
+                        <span>Lake Town, Near Sunrise Club,<br>Siliguri, WB 734001</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i class="fas fa-phone-alt text-accent"></i>
+                        <a href="tel:+919876543210" class="hover:text-white">+91 98765 43210</a>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i class="fas fa-envelope text-accent"></i>
+                        <a href="mailto:hello@ektubosegolpo.com" class="hover:text-white">hello@ektubosegolpo.com</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="space-y-4">
+                <h4 class="text-white font-bold text-sm uppercase tracking-widest">Opening Hours</h4>
+                <div class="text-xs space-y-2">
+                    <p class="flex justify-between"><span>Mon - Fri:</span> <span class="text-white">11:00 AM - 10:00 PM</span></p>
+                    <p class="flex justify-between"><span>Sat - Sun:</span> <span class="text-white">10:00 AM - 11:30 PM</span></p>
+                </div>
+                <div class="mt-6 pt-4 border-t border-stone-800 flex items-center gap-4">
+                    <img src="https://fssai.gov.in/upload/knowledge_hub/1117705b4339fa3e722FSSAI-logo-min+line.png" 
+                         alt="FSSAI Logo" class="h-25 w-25 brightness-0 invert opacity-80">
+                    <div class="text-[10px] leading-tight">
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <h4 class="text-white font-bold text-sm uppercase tracking-widest">Quick Links</h4>
+                <ul class="text-xs space-y-2 font-medium">
+                    <li><a href="#" class="hover:text-accent transition-colors">Refund & Cancellation</a></li>
+                    <li><a href="#" class="hover:text-accent transition-colors">Privacy Policy</a></li>
+                    <li><a href="#" class="hover:text-accent transition-colors">Feedback Form</a></li>
+                    <li><a href="#" class="hover:text-accent transition-colors">Corporate Booking</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] font-bold uppercase tracking-widest">
+            <p>© 2025 Ektu Bose Golpo. All Rights Reserved.</p>
+            <p>Created with <i class="fas fa-heart text-red-600 mx-1"></i> by Ronit Raj Singh</p>
+        </div>
+    </div>
+</footer>
+
+    <div id="invoiceModal" class="fixed inset-0 bg-white z-50 hidden overflow-y-auto">
+        <div class="max-w-3xl mx-auto p-10 my-10 border border-stone-200 shadow-2xl rounded-3xl invoice-container relative overflow-hidden">
+            
+            <div class="absolute top-0 left-0 w-full h-2 bg-primary"></div>
+
+            <div class="flex justify-between items-start mb-12">
+                <div>
+                    <div id="invoiceLogoPlaceholder" class="mb-4 h-16 w-auto"></div>
+                    <h1 class="text-5xl font-black text-primary tracking-tighter">INVOICE</h1>
+                    <p class="text-sm font-bold text-stone-400 mt-2">ID: <span id="invId" class="text-stone-800"></span></p>
+                </div>
+                <div class="text-right">
+                    <h2 class="text-2xl font-black text-primary">Ektu Bose Golpo</h2>
+                    <p class="text-xs text-stone-500 max-w-[200px] ml-auto">Lake Town, Near Children's Park, Siliguri, WB - 734001</p>
+                    <p class="text-[10px] font-bold mt-1">FSSAI: 2285191001064</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-12 mb-12 bg-stone-50 p-6 rounded-2xl">
+                <div>
+                    <h4 class="font-black text-[10px] uppercase text-stone-400 mb-3 tracking-widest">Billed To</h4>
+                    <p class="font-black text-lg" id="invCustName"></p>
+                    <p class="text-sm text-stone-600" id="invCustContact"></p>
+                </div>
+                <div class="text-right">
+                    <h4 class="font-black text-[10px] uppercase text-stone-400 mb-3 tracking-widest">Event Detail</h4>
+                    <p class="font-black text-sm" id="invDateTime"></p>
+                    <p class="text-xs text-stone-600 uppercase font-bold" id="invRoomDetails"></p>
+                </div>
+            </div>
+
+            
+
+            <table class="w-full text-left mb-12">
+                <thead>
+                    <tr class="text-[10px] uppercase font-black text-stone-400 border-b-2 border-stone-100">
+                        <th class="pb-4 pl-2">Service Description</th>
+                        <th class="pb-4 text-center">Qty/Max</th>
+                        <th class="pb-4 text-right pr-2">Total Amount</th>
+                    </tr>
+                </thead>
+                <tbody id="invTableBody" class="text-sm">
+                    </tbody>
+            </table>
+
+            <div class="flex justify-end">
+                <div class="w-full md:w-72 space-y-3">
+                    <div class="flex justify-between text-stone-500 text-sm">
+                        <span>Items Subtotal</span>
+                        <span id="invSub">₹0</span>
+                    </div>
+                    <div id="invDiscRow" class="flex justify-between text-green-600 text-sm font-bold hidden">
+                        <span>Discount Applied</span>
+                        <span id="invDiscVal">-₹0</span>
+                    </div>
+                    <div class="flex justify-between text-stone-500 text-sm italic">
+                        <span>Miscellaneous Rounding</span>
+                        <span id="invMisc">₹0</span>
+                    </div>
+                    <div class="flex justify-between text-2xl font-black border-t-2 border-stone-100 pt-4">
+                        <span>Grand Total</span>
+                        <span id="invGrand">₹0</span>
+                    </div>
+                    <div class="flex justify-between text-green-700 font-black p-3 bg-green-50 rounded-xl mt-4">
+                        <span class="text-xs uppercase">Advance Paid</span>
+                        <span id="invAdv">₹0</span>
+                    </div>
+                    <div class="flex justify-between bg-primary text-white p-4 rounded-2xl font-black shadow-lg">
+                        <span>DUE AT VENUE</span>
+                        <span id="invDue">₹0</span>
+                    </div>
+                </div>
+            </div>
+            
+
+            <div class="mt-20 pt-10 border-t border-stone-100 grid grid-cols-2 items-end">
+                <div class="text-[10px] text-stone-400 space-y-1">
+                    <p>• Computer generated invoice</p>
+                    <p>• Signature not required for advance confirmation</p>
+                    <p>• Please carry a copy on event date</p>
+                </div>
+                <div class="text-center">
+                    <div class="h-1 bg-stone-100 w-40 mx-auto mb-2"></div>
+                    <p class="text-[10px] font-bold uppercase text-stone-400">Management Signature</p>
+                </div>
+            </div>
+
+            <div class="mt-12 flex gap-4 no-print justify-center">
+                <button onclick="window.print()" class="bg-primary text-white px-10 py-4 rounded-2xl font-black shadow-xl hover:scale-105 transition-all">
+                    <i class="fas fa-print mr-2"></i> PRINT DOCUMENT
+                </button>
+                <button onclick="document.getElementById('invoiceModal').classList.add('hidden')" class="bg-stone-100 text-stone-600 px-10 py-4 rounded-2xl font-black hover:bg-stone-200 transition-all">
+                    CLOSE
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentRoom = { name: "Not Selected", price: 0, capacity: 0 };
+        let totalHours = 0;
+        let isAdvancePaid = false;
+        let uploadedLogo = null;
+
+        // LOGO HANDLING
+        function handleLogoUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedLogo = e.target.result;
+                    document.getElementById('logoPreview').innerHTML = `<img src="${uploadedLogo}" class="w-full h-full object-contain p-2">`;
+                    document.getElementById('invoiceLogoPlaceholder').innerHTML = `<img src="${uploadedLogo}" class="h-full w-auto">`;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function setRoom(name, price, capacity) {
+            currentRoom = { name, price, capacity };
+            document.querySelectorAll('#room-party, #room-cabin').forEach(el => el.classList.remove('border-primary', 'bg-stone-50', 'ring-2', 'ring-primary/20'));
+            const id = name === 'Party Room' ? 'room-party' : 'room-cabin';
+            document.getElementById(id).classList.add('border-primary', 'bg-stone-50', 'ring-2', 'ring-primary/20');
+            updateUI();
+        }
+
+        function generateGuestMenu() {
+            const adults = parseInt(document.getElementById('adultCount').value) || 0;
+            const children = parseInt(document.getElementById('childCount').value) || 0;
+            const container = document.getElementById('guestMenuContainer');
+            container.innerHTML = "";
+
+            for (let i = 1; i <= adults; i++) container.innerHTML += createGuestRow(`Adult ${i}`, false);
+            for (let i = 1; i <= children; i++) container.innerHTML += createGuestRow(`Child ${i}`, true);
+            updateUI();
+        }
+
+        function createGuestRow(label, isChild) {
+            return `
+                <div class="flex gap-2 bg-stone-50 p-3 rounded-xl border border-stone-100 items-center">
+                    <div class="w-10 text-[9px] font-black text-stone-400 uppercase leading-none">${label}</div>
+                    <select class="guest-food text-xs p-2 border border-stone-200 bg-white rounded-lg flex-1 outline-none font-semibold shadow-sm" onchange="updateUI()">
+                        <option value="299">Veg Thali (₹299)</option>
+                        <option value="399">Non-Veg Thali (₹399)</option>
+                        ${isChild ? '<option value="199">Kids Special (₹199)</option>' : '<option value="499">Mixed Platter (₹499)</option>'}
+                        <option value="0">No Meal (₹0)</option>
+                    </select>
+                </div>`;
+        }
+
+        function calcHours() {
+            const start = document.getElementById('startTime').value;
+            const end = document.getElementById('endTime').value;
+            if (start && end) {
+                const s = new Date(`2024-01-01 ${start}`);
+                const e = new Date(`2024-01-01 ${end}`);
+                totalHours = (e - s) / (1000 * 60 * 60);
+                if (totalHours <= 0) totalHours += 24;
+                updateUI();
+            }
+        }
+
+        function updateUI() {
+            const adults = parseInt(document.getElementById('adultCount').value) || 0;
+            const children = parseInt(document.getElementById('childCount').value) || 0;
+            const totalGuests = adults + children;
+
+            // Capacity Check
+            const errorEl = document.getElementById('capacityError');
+            if(currentRoom.name !== "Not Selected" && totalGuests > currentRoom.capacity) {
+                errorEl.classList.remove('hidden');
+            } else {
+                errorEl.classList.add('hidden');
+            }
+            
+            // Room Cost Logic
+            let roomCost = currentRoom.price * (totalHours || 0);
+            if (currentRoom.name === "Party Room") {
+                if (totalHours >= 6) roomCost = 1999;
+                else if (totalHours >= 3) roomCost = 1199;
+            }
+
+            // Food Cost
+            let foodCost = 0;
+            document.querySelectorAll('.guest-food').forEach(sel => foodCost += parseInt(sel.value));
+
+            // Add-ons
+            let decorCost = parseInt(document.getElementById('decoType').value);
+
+const cakeCheck = document.getElementById('cakeCheck');
+const cakeOptions = document.getElementById('cakeOptions');
+const cakeMessage = document.getElementById('cakeMessage');
+
+if (cakeCheck.checked) {
+    cakeOptions.classList.remove('hidden');
+    decorCost += parseInt(document.getElementById('cakeWeight').value);
+} else {
+    cakeOptions.classList.add('hidden');
+    if (cakeMessage) cakeMessage.value = "";
+}
+
+            document.querySelectorAll('.addon-check:checked').forEach(chk => decorCost += parseInt(chk.value));
+
+            // Totals
+            const rawSubtotal = roomCost + foodCost + decorCost;
+            
+            // Discount
+            const isOnline = document.getElementById('orderType').value === 'online';
+            const discountVal = isOnline ? (rawSubtotal * 0.1) : 0;
+            const subAfterDiscount = rawSubtotal - discountVal;
+
+            // Rounding to divisible by 5
+            const grandTotal = Math.ceil(subAfterDiscount / 5) * 5;
+            const miscExpense = grandTotal - subAfterDiscount;
+            const advanceAmt = Math.ceil((grandTotal * 0.4) / 5) * 5;
+
+            // Update Summary UI
+            document.getElementById('resRoom').innerText = `₹${roomCost.toFixed(0)}`;
+            document.getElementById('resFood').innerText = `₹${foodCost.toFixed(0)}`;
+            document.getElementById('resDecor').innerText = `₹${decorCost.toFixed(0)}`;
+            document.getElementById('resGrand').innerText = `₹${grandTotal.toFixed(0)}`;
+            document.getElementById('resAdvance').innerText = `₹${advanceAmt.toFixed(0)}`;
+            document.getElementById('resMisc').innerText = `₹${miscExpense.toFixed(2)}`;
+
+            if(isOnline) {
+                document.getElementById('discountRow').classList.remove('hidden');
+                document.getElementById('resDiscount').innerText = `-₹${discountVal.toFixed(0)}`;
+            } else {
+                document.getElementById('discountRow').classList.add('hidden');
+            }
+
+            // Lock/Unlock Print based on Advance
+            if(!isAdvancePaid) {
+                document.getElementById('invoiceBtn').classList.add('bg-stone-700', 'cursor-not-allowed');
+                document.getElementById('invoiceBtn').classList.remove('bg-primary', 'text-white');
+                document.getElementById('invoiceBtn').disabled = true;
+            } else {
+                document.getElementById('invoiceBtn').classList.remove('bg-stone-700', 'cursor-not-allowed');
+                document.getElementById('invoiceBtn').classList.add('bg-primary', 'text-white');
+                document.getElementById('invoiceBtn').disabled = false;
+            }
+        }
+
+        function processAdvance() {
+            if(!document.getElementById('custName').value) return alert("Enter customer name first");
+            if(!document.getElementById('tcAgree').checked) return alert("Must agree to T&C");
+            
+            isAdvancePaid = true;
+            const btn = document.getElementById('payBtn');
+            btn.innerHTML = `<i class="fas fa-check-double"></i> Advance Payment Recorded`;
+            btn.classList.replace('bg-green-500', 'bg-green-700');
+            updateUI();
+            alert("Advance Recorded. You can now generate the bill.");
+        }
+
+        function generateInvoice() {
+            document.getElementById('invoiceModal').classList.remove('hidden');
+            
+            // Generate Random ID
+            document.getElementById('invId').innerText = "EBG-2024-" + Math.floor(Math.random() * 90000 + 10000);
+            document.getElementById('invCustName').innerText = document.getElementById('custName').value;
+            document.getElementById('invCustContact').innerText = `${document.getElementById('custPhone').value} | ${document.getElementById('custEmail').value}`;
+            document.getElementById('invDateTime').innerText = `${document.getElementById('eventDate').value} (${document.getElementById('startTime').value} to ${document.getElementById('endTime').value})`;
+            
+            const pax = parseInt(document.getElementById('adultCount').value) + parseInt(document.getElementById('childCount').value);
+            document.getElementById('invRoomDetails').innerText = `${currentRoom.name} Package | ${pax} Guests confirmed`;
+
+            const msg = document.getElementById('cakeMessage')?.value;
+if (msg) {
+    document.getElementById('invTableBody').innerHTML += `
+        <tr class="border-b border-stone-50">
+            <td class="py-4 pl-2 font-bold">
+                Cake Message
+                <br><span class="text-[10px] text-stone-400 font-normal">"${msg}"</span>
+            </td>
+            <td class="py-4 text-center">—</td>
+            <td class="py-4 text-right pr-2">₹0</td>
+        </tr>
+    `;
+}
+
+
+            // Calculate values for table
+            const rVal = parseInt(document.getElementById('resRoom').innerText.replace('₹', ''));
+            const fVal = parseInt(document.getElementById('resFood').innerText.replace('₹', ''));
+            const dVal = parseInt(document.getElementById('resDecor').innerText.replace('₹', ''));
+            const misc = parseFloat(document.getElementById('resMisc').innerText.replace('₹', ''));
+            const grand = parseInt(document.getElementById('resGrand').innerText.replace('₹', ''));
+            const adv = parseInt(document.getElementById('resAdvance').innerText.replace('₹', ''));
+
+            document.getElementById('invTableBody').innerHTML = `
+                <tr class="border-b border-stone-50"><td class="py-4 pl-2 font-bold">${currentRoom.name} Rental<br><span class="text-[10px] text-stone-400 font-normal">${totalHours.toFixed(1)} hrs usage</span></td><td class="py-4 text-center">1 Unit</td><td class="py-4 text-right pr-2">₹${rVal}</td></tr>
+                <tr class="border-b border-stone-50"><td class="py-4 pl-2 font-bold">Catering Services<br><span class="text-[10px] text-stone-400 font-normal">Standard Thali/Buffet</span></td><td class="py-4 text-center">${pax} Pax</td><td class="py-4 text-right pr-2">₹${fVal}</td></tr>
+                <tr class="border-b border-stone-50"><td class="py-4 pl-2 font-bold">Add-ons & Decoration<br><span class="text-[10px] text-stone-400 font-normal">Cake, Decor & setup</span></td><td class="py-4 text-center">-</td><td class="py-4 text-right pr-2">₹${dVal}</td></tr>
+            `;
+
+            document.getElementById('invSub').innerText = `₹${rVal + fVal + dVal}`;
+            document.getElementById('invMisc').innerText = `₹${misc.toFixed(2)}`;
+            document.getElementById('invGrand').innerText = `₹${grand}`;
+            document.getElementById('invAdv').innerText = `₹${adv}`;
+            document.getElementById('invDue').innerText = `₹${grand - adv}`;
+
+            // Check if discount exists
+            const discVal = document.getElementById('resDiscount').innerText;
+            if(document.getElementById('orderType').value === 'online') {
+                document.getElementById('invDiscRow').classList.remove('hidden');
+                document.getElementById('invDiscVal').innerText = discVal;
+            } else {
+                document.getElementById('invDiscRow').classList.add('hidden');
+            }
+        }
+
+        // Initialize
+        window.onload = () => {
+            generateGuestMenu();
+            // Set default date to today
+            document.getElementById('eventDate').valueAsDate = new Date();
+        };
+        
+    </script>    
+
+</body>
+</html>
